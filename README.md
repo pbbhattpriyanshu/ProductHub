@@ -43,6 +43,16 @@ ProductHub is a web application featuring a robust backend API built with modern
    npm run dev
    ```
 
+### Database Migrations
+
+The project uses Drizzle ORM for database schemas and migrations.
+
+- **Fresh Deployment:** You can push the schema directly to your new database using `npm run db:push` or generate migrations with `npm run db:generate`.
+- **Existing Deployments (Important):** If you are migrating an existing database (e.g., updating the `comments.product_id` column type from `text` to `uuid`), the schema change alone will fail. You must manually run the following SQL to cast the column type before pushing the schema:
+  ```sql
+  ALTER TABLE "comments" ALTER COLUMN "product_id" TYPE uuid USING "product_id"::uuid;
+  ```
+
 ## Project Structure
 
 - `Server/`: Contains the backend Express API source code.

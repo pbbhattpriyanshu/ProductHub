@@ -44,7 +44,12 @@ export const upsertUser = async (data: NewUser) => {
     .values(data)
     .onConflictDoUpdate({
       target: users.id,
-      set: data,
+      set: {
+        email: data.email,
+        name: data.name,
+        imageUrl: data.imageUrl,
+        updateAt: new Date(),
+      },
     })
     .returning();
   return user;
