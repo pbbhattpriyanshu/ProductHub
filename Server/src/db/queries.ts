@@ -22,7 +22,11 @@ export const getUserById = async (id: string) => {
 };
 
 export const updateUser = async (id: string, data: Partial<UpdateUserInput>) => {
-  const [user] = await db.update(users).set(data).where(eq(users.id, id)).returning();
+  const [user] = await db
+    .update(users)
+    .set({ ...data, updateAt: new Date() })
+    .where(eq(users.id, id))
+    .returning();
   if (!user) {
     throw new Error(`User with id ${id} not found`);
   }
@@ -91,7 +95,11 @@ export const getProductsByUserId = async (userId: string) => {
 };
 
 export const updateProduct = async (id: string, data: Partial<UpdateProductInput>) => {
-  const [product] = await db.update(products).set(data).where(eq(products.id, id)).returning();
+  const [product] = await db
+    .update(products)
+    .set({ ...data, updateAt: new Date() })
+    .where(eq(products.id, id))
+    .returning();
   if (!product) {
     throw new Error(`Product with id ${id} not found`);
   }
