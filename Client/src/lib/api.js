@@ -11,7 +11,7 @@ export const getAllProducts = async () => {
 };
 
 export const getProductById = async (id) => {
-    const {data} = await api.post(`/products/${id}`);
+    const {data} = await api.get(`/products/${id}`);
     return data;
 };
 
