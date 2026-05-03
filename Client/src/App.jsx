@@ -1,13 +1,19 @@
-import { Route } from "react-router"
-import {Routes} from "react-router"
+import { Routes,Route } from "react-router"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Product from "./pages/Product"
 import Edit from "./pages/Edit"
 import Create from "./pages/Create"
 import Profile from "./pages/Profile"
+import useAuthReq from "./hooks/useAuthReq"
+import useUserSync from "./hooks/useUserSync"
 
 function App() {
+  const { isClerkLoaded, isSignedIn } = useAuthReq();
+  useUserSync();
+
+  console.log(isSignedIn);
+  if (!isClerkLoaded) return null;
 
   return (
     <>

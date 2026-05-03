@@ -20,6 +20,7 @@ export const syncUser = async (req: Request, res: Response) => {
             imageUrl,
         });
 
+        console.log(user);
         res.status(200).json({ message: "User Synced", user });
     } catch (error) {
         console.log(error);
