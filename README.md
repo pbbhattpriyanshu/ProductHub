@@ -1,63 +1,146 @@
-# ProductHub
+# 🚀 ProductHub
 
-ProductHub is a web application featuring a robust backend API built with modern web technologies. 
+ProductHub is a modern, full-stack application designed to manage products and community discussions. It features a robust backend API and a dynamic frontend, built with a state-of-the-art tech stack.
 
-## Tech Stack
+---
 
-**Backend:**
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Language:** TypeScript
-- **Database:** PostgreSQL
-- **ORM:** Drizzle ORM
-- **Authentication:** Clerk Auth
+## 🏗️ System Architecture
 
-## Features
+This diagram shows how the different parts of ProductHub communicate:
 
-- RESTful API endpoints for users, products, and comments.
-- Secure authentication managed by Clerk.
-- Relational database management using PostgreSQL and Drizzle ORM.
+```mermaid
+graph TD
+    subgraph Frontend [Client - React]
+        V[Vite]
+        TSQ[TanStack Query]
+        C[Clerk SDK]
+        A[Axios]
+    end
 
-## Getting Started
+    subgraph Auth [Authentication]
+        CL[Clerk Service]
+    end
+
+    subgraph Backend [Server - Express]
+        E[Express.js]
+        D[Drizzle ORM]
+        CM[Clerk Middleware]
+    end
+
+    subgraph DB [Database]
+        P[(PostgreSQL - Neon)]
+    end
+
+    V --> TSQ
+    TSQ --> A
+    A -- Bearer Token --> E
+    E --> CM
+    CM -- Validate --> CL
+    E --> D
+    D --> P
+    V --> C
+    C -- Get Token --> CL
+```
+
+---
+
+## 🛠️ Core Concepts & Tech Stack
+
+### 1. ⚡ TanStack Query (React Query)
+**Why we use it:**
+In modern React apps, managing "server state" (data from an API) is hard. TanStack Query handles:
+- **Caching**: Data is stored so navigating back to a page is instant.
+- **Loading States**: Automatically gives us `isLoading` and `isPending` flags.
+- **Auto-Refetching**: Keeps data fresh without manual refreshes.
+
+**Example:**
+```javascript
+const { data, isLoading } = useQuery({ 
+  queryKey: ['products'], 
+  queryFn: getAllProducts 
+});
+```
+
+### 2. 🔐 Authentication (Clerk)
+We use **Clerk** for secure, hassle-free authentication.
+- **Frontend**: The `useAuth` hook provides tokens and user status.
+- **Backend**: The `clerkMiddleware` protects routes.
+- **User Sync**: When a user signs in, we automatically "sync" their data to our Postgres database using a custom hook (`useUserSync`).
+
+### 3. 🗄️ Database (PostgreSQL & Drizzle)
+PostgreSQL is our "brain." It stores users, products, and comments. 
+- **Drizzle ORM**: Allows us to write TypeScript code instead of raw SQL strings, making the database type-safe.
+- **Relationships**: A `User` can have many `Products`, and a `Product` can have many `Comments`.
+
+---
+
+## 🔄 User Sync Flow
+
+When a user logs in via Clerk, we need to make sure they exist in our local database so we can link them to products they create.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Clerk
+    participant Backend
+    participant Postgres
+
+    User->>Frontend: Login
+    Frontend->>Clerk: Authenticate
+    Clerk-->>Frontend: Success (JWT Token)
+    Frontend->>Frontend: useUserSync() triggers
+    Frontend->>Backend: POST /api/users/sync (with Token)
+    Backend->>Backend: clerkMiddleware validates token
+    Backend->>Postgres: Upsert User (Insert or Update)
+    Postgres-->>Backend: User Synced
+    Backend-->>Frontend: 200 OK
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-
 - Node.js (v18+)
-- PostgreSQL database
-- Clerk API keys
+- PostgreSQL (Neon.tech recommended)
+- Clerk Account
 
 ### Installation
 
-1. Clone the repository.
-2. Navigate to the `Server` directory:
+1. **Clone the Repo**
+2. **Server Setup**:
    ```bash
    cd Server
-   ```
-3. Install dependencies:
-   ```bash
    npm install
+   # Add .env (DATABASE_URL, CLERK_SECRET_KEY, etc.)
+   npm run dev
    ```
-4. Set up your environment variables. Update the `.env` file in the `Server` directory with your configuration requirements (e.g., Database URL, Clerk Secret Keys, Frontend URL).
-5. Start the development server:
+3. **Client Setup**:
    ```bash
+   cd Client
+   npm install
+   # Add .env (VITE_API_URL, VITE_CLERK_PUBLISHABLE_KEY)
    npm run dev
    ```
 
-### Database Migrations
+### 🛠️ Database Commands
+- `npm run db:push`: Sync your schema changes directly to the DB.
+- `npm run db:studio`: Open a GUI to view your database records.
 
-The project uses Drizzle ORM for database schemas and migrations.
+---
 
-- **Fresh Deployment:** You can push the schema directly to your new database using `npm run db:push` or generate migrations with `npm run db:generate`.
-- **Existing Deployments (Important):** If you are migrating an existing database (e.g., updating the `comments.product_id` column type from `text` to `uuid`), the schema change alone will fail. You must manually run the following SQL to cast the column type before pushing the schema:
-  ```sql
-  ALTER TABLE "comments" ALTER COLUMN "product_id" TYPE uuid USING "product_id"::uuid;
-  ```
+## 📁 Project Structure
 
-## Project Structure
+- **`/Client`**: React frontend with Vite.
+  - `/src/hooks`: Custom logic for Auth and API state.
+  - `/src/lib`: Shared Axios configuration.
+- **`/Server`**: Express API.
+  - `/src/db`: Database schemas and queries.
+  - `/src/routes`: API endpoints.
+  - `/src/controllers`: Business logic.
 
-- `Server/`: Contains the backend Express API source code.
-- `Client/`: Contains the frontend source code (to be initialized).
+---
 
-## License
-
+## 📝 License
 ISC License
