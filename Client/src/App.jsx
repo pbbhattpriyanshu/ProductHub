@@ -1,4 +1,4 @@
-import { Routes,Route } from "react-router"
+import { Routes,Route, Navigate } from "react-router"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Product from "./pages/Product"
@@ -12,7 +12,6 @@ function App() {
   const { isClerkLoaded, isSignedIn } = useAuthReq();
   useUserSync();
 
-  console.log(isSignedIn);
   if (!isClerkLoaded) return null;
 
   return (
@@ -23,7 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<Product />} />
-          <Route path="/create" element={<Create />} />
+          <Route path="/create" element={isSignedIn ? <Create /> : <Navigate to={"/"}/> } />
           <Route path="/edit/:id" element={<Edit />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
