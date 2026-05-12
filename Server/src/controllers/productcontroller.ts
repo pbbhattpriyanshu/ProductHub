@@ -26,12 +26,11 @@ export const getProductById = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
         const product = await queries.getProductById(id);
-
-        if (!product) return res.status(400).json({ message: "Product not found" });
+        if (!product) return res.status(404).json({ message: "Product not found" });
         res.status(200).json(product);
     } catch (error) {
-        console.log("error in fetching single product");
-        res.status(500).json({ message: "Failed to get product" })
+        console.error("Error in getProductById:", error);
+        res.status(500).json({ message: "Failed to get product" });
     }
 };
 

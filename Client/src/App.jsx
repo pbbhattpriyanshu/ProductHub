@@ -23,8 +23,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/create" element={isSignedIn ? <Create /> : <Navigate to={"/"}/> } />
-          <Route path="/edit/:id" element={<Edit />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/edit/:id" element={isSignedIn ? <Edit /> : <Navigate to={"/"}/> } />
+          <Route path="/profile" element={isSignedIn ? <Profile/> : <Navigate to={"/"}/> } />
         </Routes>
       </main>
     </div>

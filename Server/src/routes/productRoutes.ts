@@ -23,22 +23,18 @@ const router = Router();
 router.get("/", getAllProducts);
 
 /**
- * @route   GET /api/products/:id
- * @desc    Get a single product by its ID
- * @access  Public
- */
-router.get("/:id", getProductById);
-
-// ==========================================
-// PROTECTED ROUTES (Requires Authentication)
-// ==========================================
-
-/**
  * @route   GET /api/products/my
  * @desc    Get products created by the current user
  * @access  Private
  */
 router.get("/my", requireAuth(), getMyProducts);
+
+/**
+ * @route   GET /api/products/:id
+ * @desc    Get a single product by its ID
+ * @access  Public
+ */
+router.get("/:id", getProductById);
 
 /**
  * @route   POST /api/products
